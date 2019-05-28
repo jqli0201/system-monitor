@@ -12,7 +12,7 @@
 #include "util.h"
 
 //Reading /proc/[PID]/status for memory status of specific process
-string ProcessParser::getVmSize(string pid)
+string ProcessParser::get_vm_size(string pid)
 {
   string line;
   //Declaring search attribute for file
@@ -36,25 +36,27 @@ string ProcessParser::getVmSize(string pid)
   return to_string(result);
 }
 
-string ProcessParser::getCpuPercent(string pid) {
+string ProcessParser::get_cpu_percent(string pid) {
+  string line;
+  string value;
+  float result;
+  ifstream stream = Util::getStream((Path::basePath() + pid + "/" + Path::statPath()));
+  getline(stream, line);
+  string str = line;
+  istringstream buf(str);
+  istream_iterator<string> beg(buf), end;
+  vector<string> values(beg, end);
   // acquiring relevant times for calculation of active occupation of CPU for selected process
-
-  //Path::basePath() + pid + "/" + Path::statPath()
-
-  //float utime = stof(ProcessParser::getProcUpTime(pid));
-
-  //float stime = //14
-  //float cutime = //15
-  //float cstime = //16
-  //float starttime = //21;
-
-  //float uptime = ProcesspARSER::getSysUpTime();
-
-  //float freq = sysconf(_SC_CLK_TCK);
-
-  //float total_time = utime + stime + cutime + cstime;
-  //float seconds = uptime - (starttime/freq);
-  //result = 100.0*((total_time/freq)/seconds);
-
-  //return to_string(result);
+  float utime = stof(ProcessParser::get_proc_up_time(pid));
+  float stime = stof(values[14]);
+  float cutime = stof(values[15]);
+  float cstime = stof(values[16]);
+  float starttime = stof(values[21]);
+  float uptime = ProcessParser::get_sync_up_time();
+  // provides the number of ticks per second
+  float freq = sysconf(_SC_CLK_TCK);
+  float total_time = utime + stime + cutime + cstime;
+  float seconds = uptime - (starttime/freq);
+  result = 100.0*((total_time/freq)/seconds);
+  return to_string(result);
 }
