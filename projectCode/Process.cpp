@@ -25,7 +25,7 @@ string Process::GetUpTime() const {
   return this->up_time_;
 }
 string Process::GetProcess() {
-  if (!ProcessParser::IsPidExisting(this->pid)) {
+  if (!ProcessParser::IsPidExisting(this->pid_)) {
     return "";
   }
   this->mem_ = ProcessParser::GetVmSize(this->pid_);
