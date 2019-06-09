@@ -363,3 +363,8 @@ float total_time = active_time + idle_time;
 float result = 100.0 * (active_time / total_time);
 return to_string(result);
 }
+
+bool ProcessParser::IsPidExisting(string pid) {
+  std::vector<std::string> pid_list = ProcessParser::GetPidList();
+  return std::find(pid_list.begin(), pid_list.end(), pid) != pid_list.end();
+}
